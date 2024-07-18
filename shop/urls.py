@@ -3,8 +3,9 @@ from django.urls import path
 
 from Digikala import settings
 from shop import views
-
+from shop.views import about
+app_name = 'shop'
 urlpatterns = [
-    path('', views.index, name='index')
+    path('', views.index, name='home'),
+    path('about/', about, name='about'),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

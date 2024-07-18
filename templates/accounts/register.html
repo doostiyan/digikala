@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <br>
+    <br>
+   
+    <form action="" method="post" class="col-md-6">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input class="btn btn-primary" type="submit" value="ثبت نام کنید">
+    </form> <br>
+    <br>
+    <br>
+    <br>
+{% endblock %}
