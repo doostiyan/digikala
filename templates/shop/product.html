@@ -15,15 +15,23 @@
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-text">{{ product.description }}</p>
                         {% if product.is_sale %}
-                            <strike> 💰 قیمت :  {{ product.price| intcomma }} تومان</strike> <br>
+                            <strike> 💰 قیمت : {{ product.price| intcomma }} تومان</strike> <br>
                             💰 قیمت :  {{ product.sale_price| intcomma }} تومان
                         {% else %}
                             💰 قیمت : {{ product.price| intcomma }} تومان
                         {% endif %}<br><br><br><br>
-                            <button class="add-cart btn btn-secondary" data-product-id="{{ product.id }}">اضافه کردن به سبد خرید</button>
+                        <select class="form-select" aria-label="Default select example" id="cart-qty">
+                            <option selected>تعداد محصول را انتخاب کنید</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select><br><br>
+                        <button class="add-cart btn btn-secondary" data-product-id="{{ product.id }}">اضافه کردن به سبد
+                            خرید
+                        </button>
 
-{#                        <botton class="btn btn-secondary" type="button" value="{{ product.id }}" id='add-cart'>اضافه کردن به سبد خرید</botton>#}
-                        <a class="btn btn-primary" type="submit" href="{% url 'shop:home' %}" >بازگشت به صفحه اصلی</a>
+                        {#                        <botton class="btn btn-secondary" type="button" value="{{ product.id }}" id='add-cart'>اضافه کردن به سبد خرید</botton>#}
+                        <a class="btn btn-primary" type="submit" href="{% url 'shop:home' %}">بازگشت به صفحه اصلی</a>
                     </div>
                 </div>
             </div>
@@ -31,51 +39,52 @@
     </div>
     <br>
     <br>
-{#    <script>#}
-{#    $(document).on('click', '#add-cart', function(e){#}
-{#        e.preventDefault();#}
-{#        $.ajax({#}
-{#            type: 'POST',#}
-{#            url: "{% url 'orders:order_add' %}",#}
-{#            data: {#}
-{#                product_id: $('#add-cart').val(),#}
-{#                csrfmiddlewaretoken: '{{ csrf_token }}',#}
-{#                action: 'post'#}
-{#            },#}
-{#            success: function (json){#}
-{#                //console.log(json)#}
-{#                document.getElementById('cart_quantity').textContent = json.qty#}
-{#            },#}
-{#            error: function (xhr, errmsg, err){#}
-{##}
-{#            }#}
-{#        })#}
-{#    })#}
-{#    </script>#}
-<script>
-    $(document).on('click', '.add-cart', function(e){
-        e.preventDefault();
-        let product_id = $(this).data('product-id');
-        let csrf_token = $('meta[name="csrf-token"]').attr('content');
-        console.log('Product ID:', product_id);  // اضافه کردن لاگ برای بررسی مقدار
-        console.log('CSRF Token:', csrf_token);  // اضافه کردن لاگ برای بررسی توکن CSRF
-        $.ajax({
-            type: 'POST',
-            url: "{% url 'orders:order_add' %}",
-            data: {
-                product_id: product_id,
-                csrfmiddlewaretoken: csrf_token,
-                action: 'post'
-            },
-            success: function (json){
-                document.getElementById('cart_quantity').textContent = json.qty;
-            },
-            error: function (xhr, errmsg, err){
-                console.error(errmsg);
-            }
+    {#    <script>#}
+    {#    $(document).on('click', '#add-cart', function(e){#}
+    {#        e.preventDefault();#}
+    {#        $.ajax({#}
+    {#            type: 'POST',#}
+    {#            url: "{% url 'orders:order_add' %}",#}
+    {#            data: {#}
+    {#                product_id: $('#add-cart').val(),#}
+    {#                csrfmiddlewaretoken: '{{ csrf_token }}',#}
+    {#                action: 'post'#}
+    {#            },#}
+    {#            success: function (json){#}
+    {#                //console.log(json)#}
+    {#                document.getElementById('cart_quantity').textContent = json.qty#}
+    {#            },#}
+    {#            error: function (xhr, errmsg, err){#}
+    {##}
+    {#            }#}
+    {#        })#}
+    {#    })#}
+    {#    </script>#}
+    <script>
+        $(document).on('click', '.add-cart', function (e) {
+            e.preventDefault();
+            let product_id = $(this).data('product-id');
+            let csrf_token = $('meta[name="csrf-token"]').attr('content');
+            console.log('Product ID:', product_id);  // اضافه کردن لاگ برای بررسی مقدار
+            console.log('CSRF Token:', csrf_token);  // اضافه کردن لاگ برای بررسی توکن CSRF
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'orders:order_add' %}",
+                data: {
+                    product_id: product_id,
+                    product_qty: $('#cart-qty option:selected').text(),
+                    csrfmiddlewaretoken: csrf_token,
+                    action: 'post'
+                },
+                success: function (json) {
+                    document.getElementById('cart_quantity').textContent = json.qty;
+                },
+                error: function (xhr, errmsg, err) {
+                    console.error(errmsg);
+                }
+            });
         });
-    });
-</script>
+    </script>
 
 
 {% endblock %}

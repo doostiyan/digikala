@@ -11,11 +11,12 @@ class Cart:
 
         self.cart = cart
 
-    def add(self, product):
+    def add(self, product, quantity):
         product_id = str(product.id)
+        product_qty = str(quantity)
 
         if product_id not in self.cart:
-            self.cart[product_id] = {'price': str(product.price)}
+            self.cart[product_id] = int(product_qty)
 
         self.session.modified = True
 
@@ -26,3 +27,41 @@ class Cart:
         products_ids = self.cart.keys()
         products = Product.objects.filter(id__in=products_ids)
         return products
+
+    def get_quants(self):
+        quantities = self.cart
+        return quantities
+
+    def update(self, product, quantity):
+        product_id = str(product)
+        product_qty = str(quantity)
+
+        our_cart = self.cart
+        our_cart[product_id] = product_qty
+        self.session.modified = True
+
+        cart_update = self.cart
+        return cart_update
+
+    def delete(self, product):
+        product_id = str(product)
+        if product_id in self.cart:
+            del self.cart[product_id]
+
+        self.session.modified = True
+
+    def get_total(self):
+        product_id = self.cart.keys()
+        products = Product.objects.filter(id__in=product_id)
+        total = 0
+
+        for key, value in self.cart.items():
+            key = int(key)
+            for product in products:
+                if product.id == key:
+                    if product.is_sale:
+                        total = total + (product.sale_price * value)
+                    else:
+                        total = total + (product.price * value)
+
+        return total

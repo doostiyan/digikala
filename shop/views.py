@@ -5,6 +5,11 @@ from django.views import View
 from shop.models import Product, Category
 
 
+class AllCategoryView(View):
+    def get(self, request, *args, **kwargs):
+        categories = Category.objects.all()
+        return render(request, 'shop/all_category.html', {'categories': categories})
+
 def index(request):
     products = Product.objects.all()
     return render(request, 'shop/index.html', {'products': products})
