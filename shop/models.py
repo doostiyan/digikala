@@ -20,7 +20,7 @@ class Customers(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
-class Products(models.Model):
+class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(max_length=200, default=' ', blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=0)
@@ -41,8 +41,8 @@ class Products(models.Model):
         return f'{self.name} {self.price} '
 
 
-class Orders(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+class Order(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customers, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     address = models.CharField(max_length=200, blank=False)
