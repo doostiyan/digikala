@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views import View
@@ -28,6 +29,7 @@ class OrderAdd(View):
             cart_quantity = cart.__len__()
 
             response = JsonResponse({'qty': cart_quantity})
+            messages.success(request, "سفارش شما اضافه شد")
             return response
 
 # class OrderAdd(View):
@@ -61,7 +63,9 @@ class OrderUpdate(View):
             cart.update(product=product_id, quantity=product_qty)
 
             response = JsonResponse({'qty': product_qty})
+            messages.success(request, "سفارش شما تغییر داده شد", 'info')
             return response
+
 
 class OrderDelete(View):
     def post(self, request):
@@ -72,4 +76,5 @@ class OrderDelete(View):
             cart.delete(product=product_id)
 
             response = JsonResponse({'product': product_id})
+            messages.error(request, "سفارش شما حذف شد", 'danger')
             return response

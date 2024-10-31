@@ -9,6 +9,7 @@
 
                 {% if request.user.is_authenticated %}
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts:logout' %}">خارج شدن</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts:update_user' %}">پروفایل</a></li>
                 {% else %}
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts:login' %}">وارد شدن</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts:register' %}">ثبت نام کردن</a></li>

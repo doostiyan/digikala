@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from shop.models import Product
 
 
@@ -53,15 +55,18 @@ class Cart:
     def get_total(self):
         product_id = self.cart.keys()
         products = Product.objects.filter(id__in=product_id)
-        total = 0
+        total = Decimal('0.0')
 
         for key, value in self.cart.items():
             key = int(key)
+            value = Decimal(value)  # تبدیل value به Decimal
             for product in products:
                 if product.id == key:
                     if product.is_sale:
-                        total = total + (product.sale_price * value)
+                        # تبدیل sale_price به Decimal
+                        total = total + (Decimal(product.sale_price) * value)
                     else:
-                        total = total + (product.price * value)
+                        # تبدیل price به Decimal
+                        total = total + (Decimal(product.price) * value)
 
         return total

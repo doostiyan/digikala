@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load humanize %}
-
 {% block content %}
     <br>
     <br>
@@ -78,6 +77,7 @@
                 },
                 success: function (json) {
                     document.getElementById('cart_quantity').textContent = json.qty;
+                    location.reload()
                 },
                 error: function (xhr, errmsg, err) {
                     console.error(errmsg);
