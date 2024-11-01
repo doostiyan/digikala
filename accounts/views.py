@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views import View
 
-from accounts.forms import UserCreationForm, UserLoginForm, UpdateProfileForm, UpdatePasswordForm
+from accounts.forms import UserCreationForm, UserLoginForm, UpdateProfileForm, UpdatePasswordForm, UpdateUserInfoForm
+from accounts.models import Profile
 
 
 class RegisterUserView(View):
@@ -100,4 +101,16 @@ def update_password(request):
     else:
         messages.error(request, 'ابتدا باید لاگین کنی')
         return redirect('accounts:login')
-    # return render(request, 'accounts/update_password.html')
+
+def update_info(request):
+    if request.user.is_authenticated:
+        new_user = Profile.objects.get(user__id=request.user.id)
+        form = UpdateUserInfoForm(request.POST or None, instance=new_user )
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'اطلاعات شما ثبت شد ')
+            return redirect('shop:home')
+        return render(request, 'accounts/update_info.html' , {'form': form})
+    else:
+        messages.error(request, 'ابتدا باید لاگین کنی')
+        return redirect('accounts:login')
