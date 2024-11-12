@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 
@@ -18,6 +19,15 @@ def index(request):
 def about(request):
     return render(request, 'about.html')
 
+class SearchView(View):
+    def post(self, request, *args, **kwargs):
+        searched = request.POST['searched']
+        searched = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
+        if not searched:
+            messages.error(request, 'چنین محصولی یافت نشد')
+            return render(request, 'shop/search.html', {})
+        else:
+            return render(request, 'shop/search.html', {'searched': searched} )
 
 class ProductDetailView(View):
     def get(self, request, pk):
