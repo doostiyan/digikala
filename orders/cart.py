@@ -15,6 +15,21 @@ class Cart:
 
         self.cart = cart
 
+    def db_add(self, product, quantity):
+        product_id = str(product)
+        product_qty = str(quantity)
+
+        if product_id not in self.cart:
+            self.cart[product_id] = int(product_qty)
+
+        self.session.modified = True
+
+        if self.request.user.is_authenticated:
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            db_cart = str(self.cart).replace('\'', '\"')
+
+            current_user.update(old_cart=str(db_cart))
+
     def add(self, product, quantity):
         product_id = str(product.id)
         product_qty = str(quantity)
@@ -26,7 +41,7 @@ class Cart:
 
         if self.request.user.is_authenticated:
             current_user = Profile.objects.filter(user__id=self.request.user.id)
-            db_cart = str(self.cart).replace('\"', '\'')
+            db_cart = str(self.cart).replace('\'', '\"')
 
             current_user.update(old_cart=str(db_cart))
 
@@ -50,6 +65,12 @@ class Cart:
         our_cart[product_id] = product_qty
         self.session.modified = True
 
+        if self.request.user.is_authenticated:
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            db_cart = str(self.cart).replace('\'', '\"')
+
+            current_user.update(old_cart=str(db_cart))
+
         cart_update = self.cart
         return cart_update
 
@@ -57,8 +78,13 @@ class Cart:
         product_id = str(product)
         if product_id in self.cart:
             del self.cart[product_id]
-
         self.session.modified = True
+
+        if self.request.user.is_authenticated:
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            db_cart = str(self.cart).replace('\'', '\"')
+
+            current_user.update(old_cart=str(db_cart))
 
     def get_total(self):
         product_id = self.cart.keys()

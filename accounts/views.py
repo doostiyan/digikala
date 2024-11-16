@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,6 +9,7 @@ from django.views import View
 
 from accounts.forms import UserCreationForm, UserLoginForm, UpdateProfileForm, UpdatePasswordForm, UpdateUserInfoForm
 from accounts.models import Profile
+from orders.cart import Cart
 
 
 class RegisterUserView(View):
@@ -52,6 +55,15 @@ class LoginUserView(View):
             user = authenticate(username=cd['username'], password=cd['password'])
             if user is not None:
                 login(request, user)
+                current_user = Profile.objects.get(user__id=request.user.id)
+                saved_cart = current_user.old_cart
+
+                if saved_cart:
+                    converted_cart = json.loads(saved_cart)
+                    cart = Cart(request)
+                    for key, value in converted_cart.items():
+                        cart.db_add(product=key, quantity=value)
+
                 messages.success(request, 'با موفقیت وارد شدید', 'success')
                 return redirect('shop:home')
             messages.error(request, 'اطلاعات نامعتبر است', 'danger')
