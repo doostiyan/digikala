@@ -5,13 +5,12 @@
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
                 <h1 class="display-4 fw-bolder">جستجو محصولات </h1>
-
             </div>
         </div>
     </header>
     <br>
-    <br>
     <div class="container">
+        {% include 'inc/messages.html' %}
         <div class="row">
             <center>
                 <div class="card">
@@ -21,11 +20,11 @@
                     <div class="card-body">
                         <form action="{% url 'shop:search' %}" method="POST">
                             {% csrf_token %}
-                            <input type="text" class="form-control" placeholder="">
-
-                            <button type="submit" class="btn btn-primary">جستجو</button>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="searched" placeholder="نام محصول را وارد کنید...">
+                            </div>
                             <br>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                            <button type="submit" class="btn btn-primary">جستجو</button>
                         </form>
                     </div>
                 </div>

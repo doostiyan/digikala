@@ -21,13 +21,15 @@ def about(request):
 
 class SearchView(View):
     def post(self, request, *args, **kwargs):
-        searched = request.POST['searched']
-        searched = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
-        if not searched:
-            messages.error(request, 'چنین محصولی یافت نشد')
-            return render(request, 'shop/search.html', {})
+        searched = request.POST.get('searched', '')
+        if searched:
+            products = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
+            if not products:
+                messages.error(request, 'چنین محصولی یافت نشد')
+            return render(request, 'shop/search.html', {'searched': products})
         else:
-            return render(request, 'shop/search.html', {'searched': searched} )
+            messages.error(request, 'لطفا نام محصول را وارد کنید')
+            return render(request, 'shop/search.html')
 
 class ProductDetailView(View):
     def get(self, request, pk):
