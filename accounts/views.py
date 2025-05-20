@@ -6,11 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views import View
-
+from payment.models import ShopingAddress
 from accounts.forms import UserCreationForm, UserLoginForm, UpdateProfileForm, UpdatePasswordForm, UpdateUserInfoForm
 from accounts.models import Profile
 from orders.cart import Cart
-
+from payment.forms import ShopingForm
 
 class RegisterUserView(View):
     form_class = UserCreationForm
@@ -117,12 +117,16 @@ def update_password(request):
 def update_info(request):
     if request.user.is_authenticated:
         new_user = Profile.objects.get(user__id=request.user.id)
+        shoping_user = ShopingAddress.objects.get(user__id=request.user.id)
         form = UpdateUserInfoForm(request.POST or None, instance=new_user )
-        if form.is_valid():
+        shoping_form = ShopingForm(request.POST or None, instance=shoping_user)
+        if form.is_valid() or shoping_form.is_valid():
             form.save()
+            shoping_form.save()
+
             messages.success(request, 'اطلاعات شما ثبت شد ')
             return redirect('shop:home')
-        return render(request, 'accounts/update_info.html' , {'form': form})
+        return render(request, 'accounts/update_info.html' , {'form': form, 'shoping_form': shoping_form})
     else:
         messages.error(request, 'ابتدا باید لاگین کنی')
         return redirect('accounts:login')

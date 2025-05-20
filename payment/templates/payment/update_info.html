@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <br>
+    <br>
+    <strong>اطلاعات خریدار</strong>
+
+    
+    <form action="" method="post" class="col-md-6">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input class="btn btn-primary" type="submit" value="ویرایش پروفایل">
+    </form> <br>
+    <br>
+     <br>
+{% endblock %}
