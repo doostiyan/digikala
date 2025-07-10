@@ -2,13 +2,29 @@
 
 {% block content %}
     <br>
-    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h3>ویرایش اطلاعات کاربری</h3>
+                <hr>
 
-    <form action="" method="post" class="col-md-6">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input class="btn btn-primary" type="submit" value="ویرایش پروفایل">
-    </form> <br>
+                <form action="" method="post">
+                    {% csrf_token %}
+
+                    <h4>اطلاعات پروفایل</h4>
+                    {{ form.as_p }}
+
+                    <hr>
+
+                    <h4>اطلاعات و آدرس خرید</h4>
+                    {{ shopping_form.as_p }}
+
+                    <br>
+                    <input class="btn btn-primary" type="submit" value="ذخیره تغییرات">
+                </form>
+                <br>
+            </div>
+        </div>
+    </div>
     <br>
-     <br>
 {% endblock %}

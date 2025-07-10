@@ -1,16 +1,16 @@
 import json
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views import View
-from payment.models import ShopingAddress
+from payment.models import ShoppingAddress
 from accounts.forms import UserCreationForm, UserLoginForm, UpdateProfileForm, UpdatePasswordForm, UpdateUserInfoForm
 from accounts.models import Profile
 from orders.cart import Cart
-from payment.forms import ShopingForm
+from payment.forms import ShoppingForm
 
 class RegisterUserView(View):
     form_class = UserCreationForm
@@ -114,19 +114,39 @@ def update_password(request):
         messages.error(request, 'ابتدا باید لاگین کنی')
         return redirect('accounts:login')
 
+
 def update_info(request):
     if request.user.is_authenticated:
         new_user = Profile.objects.get(user__id=request.user.id)
-        shoping_user = ShopingAddress.objects.get(user__id=request.user.id)
-        form = UpdateUserInfoForm(request.POST or None, instance=new_user )
-        shoping_form = ShopingForm(request.POST or None, instance=shoping_user)
-        if form.is_valid() or shoping_form.is_valid():
-            form.save()
-            shoping_form.save()
 
-            messages.success(request, 'اطلاعات شما ثبت شد ')
-            return redirect('shop:home')
-        return render(request, 'accounts/update_info.html' , {'form': form, 'shoping_form': shoping_form})
+        try:
+            # ۱. سعی کن آدرس را پیدا کنی
+            shopping_user = ShoppingAddress.objects.get(user=request.user)
+        except ShoppingAddress.DoesNotExist:
+            # ۲. اگر پیدا نشد، یک نمونه خالی بساز
+            shopping_user = ShoppingAddress(user=request.user)
+
+        # بهتر است اعتبارسنجی فرم‌ها را در درخواست‌های POST انجام دهید
+        if request.method == 'POST':
+            form = UpdateUserInfoForm(request.POST, instance=new_user)
+            shopping_form = ShoppingForm(request.POST, instance=shopping_user)
+
+            # معمولا شما می‌خواهید هر دو فرم معتبر باشند
+            if form.is_valid() and shopping_form.is_valid():
+                form.save()
+                shopping_form.save()  # این دستور شیء جدید را در دیتابیس می‌سازد
+
+                messages.success(request, 'اطلاعات شما با موفقیت ثبت شد.')
+                return redirect('shop:home')
+        else:  # برای درخواست‌های GET
+            form = UpdateUserInfoForm(instance=new_user)
+            shopping_form = ShoppingForm(instance=shopping_user)
+
+        context = {
+            'form': form,
+            'shopping_form': shopping_form
+        }
+        return render(request, 'accounts/update_info.html', context)
     else:
-        messages.error(request, 'ابتدا باید لاگین کنی')
+        messages.error(request, 'ابتدا باید وارد حساب کاربری خود شوید.')
         return redirect('accounts:login')
