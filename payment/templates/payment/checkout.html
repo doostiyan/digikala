@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">صورتحساب</h1>
+            <p class="lead fw-normal text-white-50 mb-0">فروشگاه همواره تخفیف</p>
+        </div>
+    </div>
+</header>
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <center>
+            <div class="card">
+                <div class="card-header">
+                    خلاصه سفارشات شما
+                </div>
+                <div class="card-body">
+                    {% for product in cart_products %}
+                    {{ product.name }} <br>
+                    {% if product.is_sale %}
+                    {{ product.sale_price|intcomma }} تومان
+                    {% else %}
+                    {{ product.price |intcomma }} تومان
+
+                    {% endif %}
+                    تعداد:
+                    {% for key, value in quantities.items %}
+                    {% if key == product.id|slugify %}
+                    <option selected>{{ value }}</option>
+                    {{ product.price|intcomma }} تومان
+                    {% endif %} {% endfor %}
+                    <hr>
+                    {% endfor %}
+<center><h3 c>مجموع قیمت کل سفارشات: {{ total| intcomma }} تومان </h3></center>
+
+            <a href="{% url 'orders:order_details'%}" class="btn btn-sm btn-outline-secondary">بازگشت به سبد خرید </a>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="card">
+                <div class="card-header">
+                    مشخصات ارسال :
+                </div>
+                <div class="card-body">
+                    {{ shopping_form.as_p }}
+                </div>
+            </div>
+            <br>
+            <a href="" class="btn btn-sm btn-outline-secondary">ادامه برای ثبت سفارشات </a>
+        </center>
+    </div>
+</div>
+<br>
+<br>
+{% endblock %}
