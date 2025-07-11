@@ -117,28 +117,22 @@ def update_password(request):
 
 def update_info(request):
     if request.user.is_authenticated:
-        new_user = Profile.objects.get(user__id=request.user.id)
-
         try:
-            # ۱. سعی کن آدرس را پیدا کنی
+            new_user = Profile.objects.get(user=request.user)
             shopping_user = ShoppingAddress.objects.get(user=request.user)
-        except ShoppingAddress.DoesNotExist:
-            # ۲. اگر پیدا نشد، یک نمونه خالی بساز
-            shopping_user = ShoppingAddress(user=request.user)
+        except (Profile.DoesNotExist, ShoppingAddress.DoesNotExist):
+            messages.error(request, 'پروفایل یا آدرس شما یافت نشد. لطفاً با پشتیبانی تماس بگیرید.')
+            return redirect('shop:home')
 
-        # بهتر است اعتبارسنجی فرم‌ها را در درخواست‌های POST انجام دهید
         if request.method == 'POST':
             form = UpdateUserInfoForm(request.POST, instance=new_user)
             shopping_form = ShoppingForm(request.POST, instance=shopping_user)
-
-            # معمولا شما می‌خواهید هر دو فرم معتبر باشند
             if form.is_valid() and shopping_form.is_valid():
                 form.save()
-                shopping_form.save()  # این دستور شیء جدید را در دیتابیس می‌سازد
-
-                messages.success(request, 'اطلاعات شما با موفقیت ثبت شد.')
+                shopping_form.save()
+                messages.success(request, 'اطلاعات شما با موفقیت به‌روزرسانی شد.')
                 return redirect('shop:home')
-        else:  # برای درخواست‌های GET
+        else:
             form = UpdateUserInfoForm(instance=new_user)
             shopping_form = ShoppingForm(instance=shopping_user)
 

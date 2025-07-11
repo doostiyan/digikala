@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from shop.models import Product
 # Create your models here.
+from django.db.models.signals import post_save
 
 class ShoppingAddress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -24,6 +25,12 @@ class ShoppingAddress(models.Model):
     def __str__(self):
         return f"{self.shopping_full_name}"
 
+def create_shopping_user(sender, created, instance, **kwargs):
+    if created:
+        user_shopping = ShoppingAddress(user=instance)
+        user_shopping.save()
+
+post_save.connect(create_shopping_user, sender=User)
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
